@@ -1,4 +1,4 @@
-{ clangMultiStdenv
+{ pkgsLLVM
 , cmake
 , curl
 , gdb
@@ -17,20 +17,25 @@
 , mdbook-i18n-helpers
 , html-tidy
 }:
-clangMultiStdenv.mkDerivation {
+let
+  llvmVersion = "17";
+  llvmPackages = pkgsLLVM."llvmPackages_${llvmVersion}";
+in
+llvmPackages.stdenv.mkDerivation {
   name = "rustc";
 
   nativeBuildInputs = [
     cmake
     gdb
     gnumake
+    html-tidy
+    llvmPackages.lld
+    mdbook
+    mdbook-i18n-helpers
     ninja
     pkg-config
     python3Full
     rustup
-    mdbook
-    mdbook-i18n-helpers
-    html-tidy
   ];
 
   buildInputs = [

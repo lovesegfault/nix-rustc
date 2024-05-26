@@ -12,18 +12,16 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable-small";
-    nix-fast-build = {
-      url = "github:Mic92/nix-fast-build";
+    nix-github-actions = {
+      url = "github:nix-community/nix-github-actions";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, nix-fast-build }:
+  outputs = { self, nixpkgs, nix-github-actions }:
     let
       forAllSystems = nixpkgs.lib.genAttrs [
-        "aarch64-darwin"
         "aarch64-linux"
-        "x86_64-darwin"
         "x86_64-linux"
       ];
     in
@@ -37,8 +35,20 @@
         }
       );
 
-      packages = forAllSystems (localSystem: {
-        inherit (nix-fast-build.packages.${localSystem}) nix-fast-build;
-      });
+
+      inherit (nixpkgs) lib;
+
+      githubActions =
+        let
+          inherit (nixpkgs.lib) mapAttrs getAttrs;
+          devShellPackages =
+            mapAttrs
+              (_: shells: mapAttrs (_: devShell: devShell.inputDerivation) shells)
+              (getAttrs [ "x86_64-linux" ] self.devShells)
+          ;
+        in
+        nix-github-actions.lib.mkGithubMatrix {
+          checks = devShellPackages;
+        };
     };
 }

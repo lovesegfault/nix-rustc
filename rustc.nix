@@ -18,7 +18,7 @@
 , html-tidy
 }:
 let
-  llvmVersion = "17";
+  llvmVersion = "18";
   llvmPackages = pkgsLLVM."llvmPackages_${llvmVersion}";
 in
 llvmPackages.stdenv.mkDerivation {

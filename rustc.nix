@@ -1,56 +1,35 @@
-{ pkgsLLVM
+{ mkShell
+, binutils
+, cacert
 , cmake
 , curl
-, gdb
 , git
-, gnumake
-, libxml2
-, ncurses
+, glibc
 , ninja
+, nix
 , openssl
+, patchelf
 , pkg-config
-, python3Full
-, rustup
-, swig
-, zlib
-, mdbook
-, mdbook-i18n-helpers
-, html-tidy
+, python3
 }:
-let
-  llvmVersion = "18";
-  llvmPackages = pkgsLLVM."llvmPackages_${llvmVersion}";
-in
-llvmPackages.stdenv.mkDerivation {
+mkShell {
   name = "rustc";
 
-  nativeBuildInputs = [
-    cmake
-    gdb
-    gnumake
-    html-tidy
-    llvmPackages.lld
-    mdbook
-    mdbook-i18n-helpers
-    ninja
-    pkg-config
-    python3Full
-    rustup
+  nativeBuildInputs =  [
+    binutils cmake ninja pkg-config python3 git curl cacert patchelf nix
   ];
 
   buildInputs = [
-    curl
-    git
-    libxml2
-    ncurses
-    openssl
-    swig
-    zlib
+    openssl glibc.out glibc.static
   ];
 
-  # Always show backtraces.
-  RUST_BACKTRACE = 1;
+  # Avoid creating text files for ICEs.
+  RUSTC_ICE = "0";
 
-  # Disable compiler hardening - required for LLVM.
-  hardeningDisable = [ "all" ];
+  # Enable backtraces
+  RUST_BACKTRACE = "1";
+
+  shellHook = ''
+    export PATH="$PATH:/nix/var/nix/profiles/default/bin"
+  '';
 }

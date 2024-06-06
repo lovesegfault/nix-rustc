@@ -48,7 +48,10 @@ mkShell {
     if bootstrapConfig != null then bootstrapConfig
     else
       ({
+        change-id = 125535;
+
         build.patch-binaries-for-nix = true;
+
         llvm.download-ci-llvm = false;
       } // extraBootstrapConfig)
   );

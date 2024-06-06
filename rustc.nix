@@ -1,18 +1,19 @@
 { mkShell
-, formats
+, bashInteractive
 , binutils
 , cacert
 , cmake
 , curl
+, formats
 , git
 , glibc
+, mdbook
+, mdbook-i18n-helpers
 , ninja
 , openssl
 , patchelf
 , pkg-config
 , python3
-, mdbook
-, mdbook-i18n-helpers
 
 , bootstrapConfig ? null
 , extraBootstrapConfig ? { }
@@ -28,6 +29,9 @@ mkShell {
     python3
     git
     patchelf
+
+    # for pure interactive shells
+    bashInteractive
 
     # bootstrap downloads
     curl
